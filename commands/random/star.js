@@ -13,11 +13,7 @@ module.exports = class StarCommand extends Command {
                 {
                     key: 'id',
                     prompt: 'What is the ID of the message you wish to star?',
-                    type: 'string',
-                    validate: id => {
-                        if (id.length === 18) return true;
-                        return 'Invalid ID.';
-                    }
+                    type: 'string'
                 }
             ]
         });
@@ -37,7 +33,8 @@ module.exports = class StarCommand extends Command {
                 .setDescription(message.content)
                 .setImage(message.attachments.first() ? message.attachments.first().url : null)
                 .setFooter(moment(message.createdTimestamp).format('MMMM Do YYYY h:mm:ss A'));
-            return channel.send({ embed });
+            await channel.send({ embed });
+            return null;
         } catch (err) {
             return msg.say(`${err.name}: ${err.message}`);
         }
