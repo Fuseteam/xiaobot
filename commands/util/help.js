@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 const { RichEmbed } = require('discord.js');
 const { stripIndents } = require('common-tags');
 
@@ -11,6 +11,7 @@ module.exports = class HelpCommand extends Command {
             memberName: 'help',
             description: 'Displays a list of available commands, or detailed information for a specified command.',
             guarded: true,
+            clientPermissions: ['EMBED_LINKS'],
             args: [
                 {
                     key: 'command',
@@ -36,21 +37,19 @@ module.exports = class HelpCommand extends Command {
                     **Group:** ${commands[0].group.name}
                     ${commands[0].details || ''}
                 `);
-            } else if (commands.length > 1) {
-                return msg.say(`Multiple Commands Found. Please be more specific: ${commands.map(c => c.name).join(', ')}`);
             } else {
-                return msg.say(`Could not identify command. Use ${msg.usage(null)} to view a list of commands you can use.`);
+                return msg.say(`Could not identify command. Use \`${msg.usage(null)}\` to view a list of commands.`);
             }
         } else {
             const embed = new RichEmbed()
                 .setTitle(!showAll ? `Commands Available in ${msg.guild ? msg.guild.name : 'this DM'}` : 'All Commands')
-                .setDescription(`Use ${msg.usage('<command>')} to view detailed information about a specific command.`)
+                .setDescription(`Use \`${msg.usage('<command>')}\` to view detailed information about a command.`)
                 .setColor(0x00AE86);
             for (const group of this.client.registry.groups.values()) {
-                embed.addField(group.name,
+                embed.addField(`❯ ${group.name}`,
                     showAll ?
-                        group.commands.map(c => c.name).join(', ') :
-                        group.commands.filter(c => c.isUsable(msg)).map(c => c.name).join(', ') || 'None Available');
+                        group.commands.map((c) => c.name).join(', ') :
+                        group.commands.filter((c) => c.isUsable(msg)).map((c) => c.name).join(', ') || 'None');
             }
             try {
                 await msg.direct({ embed });

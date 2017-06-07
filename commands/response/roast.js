@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 const roasts = require('../../assets/json/roast');
 
 module.exports = class RoastCommand extends Command {
@@ -7,20 +7,21 @@ module.exports = class RoastCommand extends Command {
             name: 'roast',
             group: 'response',
             memberName: 'roast',
-            description: 'Roasts something/someone.',
+            description: 'Roasts a user.',
             args: [
                 {
-                    key: 'thing',
-                    prompt: 'What do you want to roast?',
-                    type: 'string'
+                    key: 'user',
+                    prompt: 'What user do you want to roast?',
+                    type: 'user',
+                    default: ''
                 }
             ]
         });
     }
 
     run(msg, args) {
-        const { thing } = args;
+        const user = args.user || msg.author;
         const roast = roasts[Math.floor(Math.random() * roasts.length)];
-        return msg.say(`${thing}, ${roast}`);
+        return msg.say(`${user.username}, ${roast}`);
     }
 };

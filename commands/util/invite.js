@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 const { stripIndents } = require('common-tags');
 
 module.exports = class InviteCommand extends Command {
@@ -7,7 +7,8 @@ module.exports = class InviteCommand extends Command {
             name: 'invite',
             group: 'util',
             memberName: 'invite',
-            description: 'Sends you an invite for the bot and an invite to my server.'
+            description: 'Sends you an invite for the bot and an invite to my server.',
+            guarded: true
         });
     }
 

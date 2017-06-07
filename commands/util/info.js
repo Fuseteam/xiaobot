@@ -1,6 +1,5 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 const { RichEmbed } = require('discord.js');
-const { oneLine } = require('common-tags');
 const { version } = require('../../package');
 const moment = require('moment');
 require('moment-duration-format');
@@ -12,40 +11,36 @@ module.exports = class InfoCommand extends Command {
             aliases: ['information', 'stats'],
             group: 'util',
             memberName: 'info',
-            description: 'Gives some bot info.'
+            description: 'Gives some bot info.',
+            guarded: true,
+            clientPermissions: ['EMBED_LINKS']
         });
     }
 
     async run(msg) {
-        if (msg.channel.type !== 'dm')
-            if (!msg.channel.permissionsFor(this.client.user).has('EMBED_LINKS'))
-                return msg.say('This Command requires the `Embed Links` Permission.');
         const guilds = await this.client.shard.fetchClientValues('guilds.size');
-        const memory = await this.client.shard.broadcastEval('Math.round(process.memoryUsage().heapUsed / 1024 / 1024)');
+        const memory = await this.client.shard.broadcastEval('process.memoryUsage().heapUsed');
         const embed = new RichEmbed()
             .setColor(0x00AE86)
-            .setFooter(oneLine`
-                ©2017 dragonfire535#8081 |
-                Created ${moment.duration(Date.now() - this.client.user.createdTimestamp).format('y[ years], M[ months], w[ weeks, and ]d[ days]')} ago!
-            `)
-            .addField('Servers',
+            .setFooter('©2017 dragonfire535#8081')
+            .addField('❯ Servers',
                 guilds.reduce((prev, val) => prev + val, 0), true)
-            .addField('Shards',
+            .addField('❯ Shards',
                 this.client.options.shardCount, true)
-            .addField('Commands',
+            .addField('❯ Commands',
                 this.client.registry.commands.size, true)
-            .addField('Source Code',
+            .addField('❯ Source Code',
                 '[View Here](https://github.com/dragonfire535/xiaobot)', true)
-            .addField('Memory Usage',
-                `${memory.reduce((prev, val) => prev + val, 0)}MB`, true)
-            .addField('Uptime',
+            .addField('❯ Memory Usage',
+                `${Math.round(memory.reduce((prev, val) => prev + val, 0) / 1024 / 1024)}MB`, true)
+            .addField('❯ Uptime',
                 moment.duration(this.client.uptime).format('d[d]h[h]m[m]s[s]'), true)
-            .addField('Version',
+            .addField('❯ Version',
                 `v${version}`, true)
-            .addField('Node Version',
+            .addField('❯ Node Version',
                 process.version, true)
-            .addField('Library',
-                '[discord.js](https://github.com/hydrabolt/discord.js)[-commando](https://github.com/Gawdl3y/discord.js-commando)', true);
+            .addField('❯ Library',
+                '[discord.js](https://discord.js.org)[-commando](https://github.com/Gawdl3y/discord.js-commando)', true); // eslint-disable-line max-len
         return msg.embed(embed);
     }
 };

@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 
 module.exports = class RepeatCommand extends Command {
     constructor(client) {
@@ -11,8 +11,7 @@ module.exports = class RepeatCommand extends Command {
                 {
                     key: 'text',
                     prompt: 'What text would you like to repeat over and over and over and over?',
-                    type: 'string',
-                    parse: text => text.repeat(2000).substr(0, 1999)
+                    type: 'string'
                 }
             ]
         });
@@ -20,6 +19,7 @@ module.exports = class RepeatCommand extends Command {
 
     run(msg, args) {
         const { text } = args;
-        return msg.say(`\u180E${text}`);
+        const converted = text.repeat(2000).substr(0, 1999);
+        return msg.say(`\u180E${converted}`);
     }
 };

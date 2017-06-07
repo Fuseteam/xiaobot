@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 const compliments = require('../../assets/json/compliment');
 
 module.exports = class ComplimentCommand extends Command {
@@ -7,20 +7,21 @@ module.exports = class ComplimentCommand extends Command {
             name: 'compliment',
             group: 'response',
             memberName: 'compliment',
-            description: 'Compliments something/someone.',
+            description: 'Compliments a user.',
             args: [
                 {
-                    key: 'thing',
-                    prompt: 'What do you want to compliment?',
-                    type: 'string'
+                    key: 'user',
+                    prompt: 'What user do you want to compliment?',
+                    type: 'user',
+                    default: ''
                 }
             ]
         });
     }
 
     run(msg, args) {
-        const { thing } = args;
+        const user = args.user || msg.author;
         const compliment = compliments[Math.floor(Math.random() * compliments.length)];
-        return msg.say(`${thing}, ${compliment}`);
+        return msg.say(`${user.username}, ${compliment}`);
     }
 };

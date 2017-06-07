@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 
 module.exports = class StarboardCommand extends Command {
     constructor(client) {
@@ -8,6 +8,7 @@ module.exports = class StarboardCommand extends Command {
             memberName: 'starboard',
             description: 'Sets the channel for the starboard.',
             guildOnly: true,
+            userPermissions: ['ADMINISTRATOR'],
             args: [
                 {
                     key: 'channel',
@@ -16,10 +17,6 @@ module.exports = class StarboardCommand extends Command {
                 }
             ]
         });
-    }
-    
-    hasPermission(msg) {
-        return msg.member.hasPermission('ADMINISTRATOR');
     }
 
     run(msg, args) {

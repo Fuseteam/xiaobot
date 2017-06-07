@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 
 module.exports = class SingleRoleCommand extends Command {
     constructor(client) {
@@ -8,6 +8,7 @@ module.exports = class SingleRoleCommand extends Command {
             memberName: 'single-role',
             description: 'Sets a single role that is able to use commands.',
             guildOnly: true,
+            userPermissions: ['ADMINISTRATOR'],
             args: [
                 {
                     key: 'role',
@@ -16,10 +17,6 @@ module.exports = class SingleRoleCommand extends Command {
                 }
             ]
         });
-    }
-    
-    hasPermission(msg) {
-        return msg.member.hasPermission('ADMINISTRATOR');
     }
 
     run(msg, args) {

@@ -1,4 +1,4 @@
-const { Command } = require('discord.js-commando');
+const Command = require('../../structures/Command');
 const { RichEmbed } = require('discord.js');
 const snekfetch = require('snekfetch');
 const codes = require('../../assets/json/translate');
@@ -12,6 +12,7 @@ module.exports = class TranslateCommand extends Command {
             memberName: 'translate',
             description: 'Translates text to a specified language.',
             details: '**Codes:** https://tech.yandex.com/translate/doc/dg/concepts/api-overview-docpage/#languages',
+            clientPermissions: ['EMBED_LINKS'],
             args: [
                 {
                     key: 'text',
@@ -22,50 +23,43 @@ module.exports = class TranslateCommand extends Command {
                     key: 'to',
                     prompt: 'Which language is being translated to?',
                     type: 'string',
-                    validate: to => {
+                    validate: (to) => {
                         if (codes[to.toLowerCase()]) return true;
-                        return 'Invalid Language Code. Use `help translate` for a list of codes.';
+                        else return 'Invalid Language Code. Use `help translate` for a list of codes.';
                     },
-                    parse: to => to.toLowerCase()
+                    parse: (to) => to.toLowerCase()
                 },
                 {
                     key: 'from',
                     prompt: 'Which language is being translated from?',
                     type: 'string',
-                    validate: from => {
+                    default: '',
+                    validate: (from) => {
                         if (codes[from.toLowerCase()]) return true;
-                        return 'Invalid Language Code. Use `help translate` for a list of codes.';
+                        else return 'Invalid Language Code. Use `help translate` for a list of codes.';
                     },
-                    parse: from => from.toLowerCase(),
-                    default: ''
+                    parse: (from) => from.toLowerCase()
                 }
             ]
         });
     }
 
     async run(msg, args) {
-        if (msg.channel.type !== 'dm')
-            if (!msg.channel.permissionsFor(this.client.user).has('EMBED_LINKS'))
-                return msg.say('This Command requires the `Embed Links` Permission.');
         const { text, to, from } = args;
-        try {
-            const { body } = await snekfetch
-                .get('https://translate.yandex.net/api/v1.5/tr.json/translate')
-                .query({
-                    key: YANDEX_KEY,
-                    text,
-                    lang: from ? `${from}-${to}` : to
-                });
-            const lang = body.lang.split('-');
-            const embed = new RichEmbed()
-                .setColor(0x00AE86)
-                .addField(`From: ${codes[lang[0]]}`,
-                    text)
-                .addField(`To: ${codes[lang[1]]}`,
-                    body.text[0]);
-            return msg.embed(embed);
-        } catch (err) {
-            return msg.say(`${err.name}: ${err.message}`);
-        }
+        const { body } = await snekfetch
+            .get('https://translate.yandex.net/api/v1.5/tr.json/translate')
+            .query({
+                key: YANDEX_KEY,
+                text,
+                lang: from ? `${from}-${to}` : to
+            });
+        const lang = body.lang.split('-');
+        const embed = new RichEmbed()
+            .setColor(0x00AE86)
+            .addField(`❯ From: ${codes[lang[0]]}`,
+                text)
+            .addField(`❯ To: ${codes[lang[1]]}`,
+                body.text[0]);
+        return msg.embed(embed);
     }
 };
